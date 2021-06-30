@@ -1,0 +1,23 @@
+{
+  "name": "discordplaylistsaver",
+  "version": "1.0.0",
+  "description": "Sned song link, save to Youtube + Spotify playlists",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yummypasta/DiscordPlaylistSaver.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/yummypasta/DiscordPlaylistSaver/issues"
+  },
+  "homepage": "https://github.com/yummypasta/DiscordPlaylistSaver#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3"
+  }
+}
