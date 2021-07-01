@@ -1,5 +1,6 @@
-secrets.js
+config.js
 package-lock.json
+authdata.json
 
 
 # Logs
