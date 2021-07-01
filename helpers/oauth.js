@@ -38,6 +38,11 @@ export default class OAuthManager {
             }
             fs.readFile(this.filePath, (err, data) => {
                 this.data = JSON.parse(data);
+                for(const key of Object.keys(this.data)){
+                    if(this.data[key].expiryDate != undefined){
+                        this.data[key].expiryDate = new Date(this.data[key].expiryDate);
+                    }
+                }
                 resolve();
                 return;
             });
@@ -122,4 +127,13 @@ export default class OAuthManager {
             });
         });
     }
+
+    getAccessToken = async (service) => {
+        if(this.data == null) return;
+        if(this.data[service] == undefined) return;
+        if(this.data[service].accessToken == undefined || this.data[service].expiryDate.getTime() - Date.now() <= 0){
+            await this.refreshToken(service);
+        }
+        return `Bearer ${this.data[service].accessToken}`;
+    } 
 }

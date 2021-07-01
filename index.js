@@ -18,7 +18,7 @@ bot.on("ready", () => {
     youtube = new Youtube(oauth, logMessage);
 });
 
-bot.on("message", (message) => {
+bot.on("message", async (message) => {
     const split = message.content.split(" ");
     if(message.content.startsWith("linkspotify")){
         if(split.length < 2){
@@ -36,6 +36,23 @@ bot.on("message", (message) => {
         }
         oauth.runAuthFlow("youtube", split[1]);
         message.react("💬");
+        return;
+    }
+    if(message.author.bot) return;
+    const spotifyId = spotify.getTrackIdFromURL(message.content);
+    if(spotifyId !== null){
+        // Link is Spotify
+        const {name, spotifyURI} = await spotify.getTrackById(spotifyId);
+        await spotify.addToPlaylist(spotifyURI);
+        await message.react("💚");
+        return;
+    }
+    const ytId = youtube.getTrackIdFromURL(message.content);
+    if(ytId !== null){
+        // Link is Youtube
+        const {name, youtubeId} = await youtube.getTrackById(ytId);
+        await youtube.addToPlaylist(youtubeId);
+        await message.react("❤️");
         return;
     }
 });
