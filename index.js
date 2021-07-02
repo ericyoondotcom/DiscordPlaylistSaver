@@ -43,16 +43,32 @@ bot.on("message", async (message) => {
     if(spotifyId !== null){
         // Link is Spotify
         const {name, spotifyURI} = await spotify.getTrackById(spotifyId);
-        await spotify.addToPlaylist(spotifyURI);
-        await message.react("💚");
+        
+        spotify.addToPlaylist(spotifyURI).then(() => {
+            message.react("💚");
+        });
+        
+        youtube.searchForSong(name).then(async searchRes => {
+            if(searchRes == null) return;
+            await youtube.addToPlaylist(searchRes[0].youtubeId);
+            message.react("❤️");
+        });
+        
         return;
     }
     const ytId = youtube.getTrackIdFromURL(message.content);
     if(ytId !== null){
         // Link is Youtube
         const {name, youtubeId} = await youtube.getTrackById(ytId);
-        await youtube.addToPlaylist(youtubeId);
-        await message.react("❤️");
+        youtube.addToPlaylist(youtubeId).then(() => {
+            message.react("❤️");
+        });
+
+        spotify.searchForSong(name).then(async searchRes => {
+            if(searchRes == null) return;
+            await spotify.addToPlaylist(searchRes[0].spotifyURI);
+            message.react("💚");
+        })
         return;
     }
 });

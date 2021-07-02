@@ -52,4 +52,18 @@ export default class Youtube {
         if(!res.ok) console.log(await res.json());
         return;
     }
+
+    searchForSong = async (name) => {
+        // videoCategoryId 10 is music!
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(name + " audio")}&type=video&videoCategoryId=10`;
+        const res = await fetch(url, {
+            headers: {
+                "Authorization": await this.oauth.getAccessToken("youtube"),
+                "Content-Type": "application/json"
+            }
+        });
+        const json = await res.json();
+        if(json.items.length == 0) return null;
+        return json.items.map(i => ({name: i.snippet.title, youtubeId: i.id.videoId}));
+    }
 }

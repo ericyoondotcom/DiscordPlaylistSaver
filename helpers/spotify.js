@@ -42,4 +42,19 @@ export default class Spotify {
         if(!res.ok) console.log(await res.json());
         return;
     }
+
+    searchForSong = async (name) => {
+        const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(name)}&type=track&limit=1`;
+        const res = await fetch(url, {
+            headers: {
+                "Authorization": await this.oauth.getAccessToken("spotify"),
+                "Content-Type": "application/json"
+            }
+        });
+        const json = await res.json();
+        if(json.tracks == undefined || json.tracks.items == undefined) return null;
+        console.log(json.tracks.items)
+        if(json.tracks.items.length == 0) return null;
+        return json.tracks.items.map(i => ({name: i.name, spotifyURI: i.uri}));
+    }
 }
