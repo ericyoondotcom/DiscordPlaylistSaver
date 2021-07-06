@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import {YOUTUBE_PLAYLIST_ID} from "../config.js";
 
-const YOUTUBE_URL_REGEX = /.+youtube\.com\/watch\?v=([^?&]+)/ig;
+const YOUTUBE_URL_REGEX = /.*music.youtube\.com\/watch\?v=([^?&]+)/ig;
 
 export default class Youtube {
     constructor(oauth, logMessage){

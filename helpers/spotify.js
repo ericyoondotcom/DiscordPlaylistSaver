@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import {SPOTIFY_PLAYLIST_ID} from "../config.js";
 
-const SPOTIFY_URL_REGEX = /.+spotify\.com\/track\/([^?]+)/ig;
+const SPOTIFY_URL_REGEX = /.*spotify\.com\/track\/([^?]+)/ig;
 
 export default class Spotify {
     constructor(oauth, logMessage){
