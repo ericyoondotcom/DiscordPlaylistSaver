@@ -9,3 +9,5 @@ export const GOOGLE_CLIENT_SECRET = "";
 
 export const SPOTIFY_PLAYLIST_ID = "";
 export const YOUTUBE_PLAYLIST_ID = "";
+
+export const SEND_CROSSPLATFORM_URL = true;

@@ -1,5 +1,5 @@
 import DiscordAPI from "discord.js";
-import {DISCORD_TOKEN, LOGGING_CHANNEL} from "./config.js";
+import {DISCORD_TOKEN, LOGGING_CHANNEL, SEND_CROSSPLATFORM_URL} from "./config.js";
 import Spotify from "./helpers/spotify.js";
 import Youtube from "./helpers/youtube.js";
 import OAuthManager from "./helpers/oauth.js";
@@ -13,6 +13,7 @@ bot.login(DISCORD_TOKEN);
 
 bot.on("ready", () => {
     console.log("Bot connected to Discord.");
+    if(process.env.NODE_ENV === "development") console.log("## Running in Development environment ##\n## Songs will not be added to playlists ##");
     oauth = new OAuthManager(logMessage);
     spotify = new Spotify(oauth, logMessage);
     youtube = new Youtube(oauth, logMessage);
@@ -42,15 +43,16 @@ bot.on("message", async (message) => {
     const spotifyId = spotify.getTrackIdFromURL(message.content);
     if(spotifyId !== null){
         // Link is Spotify
-        const {name, spotifyURI} = await spotify.getTrackById(spotifyId);
+        const {name, artist, spotifyURI} = await spotify.getTrackById(spotifyId);
         
         spotify.addToPlaylist(spotifyURI).then(() => {
             message.react("💚");
         });
         
-        youtube.searchForSong(name).then(async searchRes => {
+        youtube.searchForSong(name, artist).then(async searchRes => {
             if(searchRes == null) return;
-            await youtube.addToPlaylist(searchRes[0].youtubeId);
+            if(SEND_CROSSPLATFORM_URL) message.channel.send(`❤️ YouTube link for **${searchRes[0].name}**\n${searchRes[0].url}`);
+            if(process.env.NODE_ENV !== "development") await youtube.addToPlaylist(searchRes[0].youtubeId);
             message.react("❤️");
         });
         
@@ -59,14 +61,15 @@ bot.on("message", async (message) => {
     const ytId = youtube.getTrackIdFromURL(message.content);
     if(ytId !== null){
         // Link is Youtube
-        const {name, youtubeId} = await youtube.getTrackById(ytId);
+        const {name, artist, youtubeId} = await youtube.getTrackById(ytId);
         youtube.addToPlaylist(youtubeId).then(() => {
             message.react("❤️");
         });
 
-        spotify.searchForSong(name).then(async searchRes => {
+        spotify.searchForSong(name, artist).then(async searchRes => {
             if(searchRes == null) return;
-            await spotify.addToPlaylist(searchRes[0].spotifyURI);
+            if(SEND_CROSSPLATFORM_URL) message.channel.send(`💚 Spotify link for **${searchRes[0].name}**\n${searchRes[0].url}`);
+            if(process.env.NODE_ENV !== "development") await spotify.addToPlaylist(searchRes[0].spotifyURI);
             message.react("💚");
         })
         return;

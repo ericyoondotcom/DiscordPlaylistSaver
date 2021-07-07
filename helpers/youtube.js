@@ -17,11 +17,17 @@ export default class Youtube {
                 "Content-Type": "application/json"
             }
         });
+        if(!res.ok){
+            console.warn("YT Get Track by ID: Received " + res.status + ": " + await res.text());
+            throw new Error("Error response from Youtube");
+        }
         const json = await res.json();
         if(json.items.length == 0) return null;
-        
+        if(process.env.NODE_ENV === "development") console.log(json.items[0].snippet);
+        const artist = json.items[0].snippet.channelTitle.replace(" - Topic", "");
         return {
             name: json.items[0].snippet.title,
+            artist,
             youtubeId: json.items[0].id
         }
     }
@@ -53,9 +59,11 @@ export default class Youtube {
         return;
     }
 
-    searchForSong = async (name) => {
+    searchForSong = async (name, artist) => {
         // videoCategoryId 10 is music!
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(name + " audio")}&type=video&videoCategoryId=10`;
+        const queryString = `${name} ${artist} audio`;
+        console.log("Youtube: searching for " + queryString);
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(queryString)}&type=video&videoCategoryId=10`;
         const res = await fetch(url, {
             headers: {
                 "Authorization": await this.oauth.getAccessToken("youtube"),
@@ -63,7 +71,12 @@ export default class Youtube {
             }
         });
         const json = await res.json();
+        if(process.env.NODE_ENV === "development") console.log(json.items);
         if(json.items.length == 0) return null;
-        return json.items.map(i => ({name: i.snippet.title, youtubeId: i.id.videoId}));
+        return json.items.map(i => ({
+            name: i.snippet.title,
+            youtubeId: i.id.videoId,
+            url: `https://music.youtube.com/watch?v=${i.id.videoId}`
+        }));
     }
 }

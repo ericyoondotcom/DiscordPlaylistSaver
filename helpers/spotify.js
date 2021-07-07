@@ -15,9 +15,19 @@ export default class Spotify {
                 "Authorization": await this.oauth.getAccessToken("spotify")
             }
         });
+        if(!res.ok){
+            console.warn("Spotify Get Track by ID: Received " + res.status + ": " + await res.text());
+            throw new Error("Error response from Spotify");
+        }
         const json = await res.json();
+        if(process.env.NODE_ENV === "development") console.log(json);
+        let artist = "";
+        if(json.artists.length > 0){
+            artist = json.artists[0].name
+        }
         return {
             name: json.name,
+            artist,
             spotifyURI: json.uri
         }
     }
@@ -43,8 +53,10 @@ export default class Spotify {
         return;
     }
 
-    searchForSong = async (name) => {
-        const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(name)}&type=track&limit=1`;
+    searchForSong = async (name, artist) => {
+        const queryString = `${name} ${artist}`;
+        console.log("Spotify: searching for " + queryString);
+        const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(queryString)}&type=track&limit=1`;
         const res = await fetch(url, {
             headers: {
                 "Authorization": await this.oauth.getAccessToken("spotify"),
@@ -53,8 +65,13 @@ export default class Spotify {
         });
         const json = await res.json();
         if(json.tracks == undefined || json.tracks.items == undefined) return null;
-        console.log(json.tracks.items)
+        if(process.env.NODE_ENV === "development") console.log(json.tracks.items)
         if(json.tracks.items.length == 0) return null;
-        return json.tracks.items.map(i => ({name: i.name, spotifyURI: i.uri}));
+        return json.tracks.items.map(i => ({
+            name: i.name,
+            spotifyURI: i.uri,
+            queryString,
+            url: `https://open.spotify.com/track/${i.id}`
+        }));
     }
 }
