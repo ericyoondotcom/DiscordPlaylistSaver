@@ -55,8 +55,10 @@ bot.on("message", async (message) => {
         youtube.searchForSong(name, artist).then(async searchRes => {
             if(searchRes == null) return;
             if(SEND_CROSSPLATFORM_URL) message.channel.send(`❤️ YouTube link for **${searchRes[0].name}**\n${searchRes[0].url}`);
-            if(process.env.NODE_ENV !== "development" && !ignore) await youtube.addToPlaylist(searchRes[0].youtubeId);
-            message.react("❤️");
+            if(process.env.NODE_ENV !== "development" && !ignore){
+                await youtube.addToPlaylist(searchRes[0].youtubeId);
+                message.react("❤️");
+            }
         });
         
         return;
@@ -75,8 +77,10 @@ bot.on("message", async (message) => {
         spotify.searchForSong(name, artist).then(async searchRes => {
             if(searchRes == null) return;
             if(SEND_CROSSPLATFORM_URL) message.channel.send(`💚 Spotify link for **${searchRes[0].name}**\n${searchRes[0].url}`);
-            if(process.env.NODE_ENV !== "development" && !ignore) await spotify.addToPlaylist(searchRes[0].spotifyURI);
-            message.react("💚");
+            if(process.env.NODE_ENV !== "development" && !ignore){
+                await spotify.addToPlaylist(searchRes[0].spotifyURI);
+                message.react("💚");
+            }
         })
         return;
     }
