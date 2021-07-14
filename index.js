@@ -40,19 +40,22 @@ bot.on("message", async (message) => {
         return;
     }
     if(message.author.bot) return;
+    const ignore = message.content.includes("!ignore");
     const spotifyId = spotify.getTrackIdFromURL(message.content);
     if(spotifyId !== null){
         // Link is Spotify
         const {name, artist, spotifyURI} = await spotify.getTrackById(spotifyId);
         
-        spotify.addToPlaylist(spotifyURI).then(() => {
-            message.react("💚");
-        });
-        
+        if(process.env.NODE_ENV !== "development" && !ignore) {
+            spotify.addToPlaylist(spotifyURI).then(() => {
+                message.react("💚");
+            });
+        }
+
         youtube.searchForSong(name, artist).then(async searchRes => {
             if(searchRes == null) return;
             if(SEND_CROSSPLATFORM_URL) message.channel.send(`❤️ YouTube link for **${searchRes[0].name}**\n${searchRes[0].url}`);
-            if(process.env.NODE_ENV !== "development") await youtube.addToPlaylist(searchRes[0].youtubeId);
+            if(process.env.NODE_ENV !== "development" && !ignore) await youtube.addToPlaylist(searchRes[0].youtubeId);
             message.react("❤️");
         });
         
@@ -62,14 +65,17 @@ bot.on("message", async (message) => {
     if(ytId !== null){
         // Link is Youtube
         const {name, artist, youtubeId} = await youtube.getTrackById(ytId);
-        youtube.addToPlaylist(youtubeId).then(() => {
-            message.react("❤️");
-        });
+        
+        if(process.env.NODE_ENV !== "development" && !ignore) {
+            youtube.addToPlaylist(youtubeId).then(() => {
+                message.react("❤️");
+            });
+        }
 
         spotify.searchForSong(name, artist).then(async searchRes => {
             if(searchRes == null) return;
             if(SEND_CROSSPLATFORM_URL) message.channel.send(`💚 Spotify link for **${searchRes[0].name}**\n${searchRes[0].url}`);
-            if(process.env.NODE_ENV !== "development") await spotify.addToPlaylist(searchRes[0].spotifyURI);
+            if(process.env.NODE_ENV !== "development" && !ignore) await spotify.addToPlaylist(searchRes[0].spotifyURI);
             message.react("💚");
         })
         return;
