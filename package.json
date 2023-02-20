@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/yummypasta/DiscordPlaylistSaver#readme",
   "dependencies": {
+    "authconnect-djs": "^1.0.1",
     "discord.js": "^12.5.3",
+    "firebase-admin": "^11.5.0",
     "fs": "^0.0.1-security",
     "node-fetch": "^2.6.1",
     "path": "^0.12.7",

@@ -1,14 +1,32 @@
 # DiscordPlaylistSaver
-Sned song link, save to Youtube + Spotify playlists
+Sned song link, save to Youtube Music + Spotify playlists
 
 ## Get Started
-1. Make a copy of `config.template.js` to `config.js`.
-2. Paste your Discord Bot's token into the `DISCORD_TOKEN` field.
-3. Copy the ID of the channel you want messages sent to, and paste in `LOGGING_CHANNEL`.
-4. You do not have to touch `REDIRECT_URL` since users are instructed to directly paste the link into Discord.
-5. Sign up for a Spotify Developer account, create a new project, and paste the relevant values into `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`. You will have to add whatever link is in `REDIRECT_URL` as an authorized redirect URI in the Spotify console.
-6. Create a new Google Cloud project, configure the OAuth consent screen, and create a new OAuth Client ID credential [here](https://console.cloud.google.com/apis/credentials). Make sure to add `REDIRECT_URL` as an authorized URI. Fill out `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+### Config file
+- Make a copy of `config.template.js` to `config.js`.
+
+### Discord bot
+- Create a new app from the Discord Developers portal. Copy the token.
+- Paste your Discord Bot's token into the `DISCORD_TOKEN` field.
+
+### Spotify
+- Sign up for a Spotify Developer account, create a new project, and paste the relevant values into `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`.
+- Add `https://authconnect-djs.web.app/redir.html` as an authorized redirect URI in your Spotify project.
+
+### Firebase
+- Create a Firebase project and create an admin service account.
+- Download the admin service account credentials into a file named `firebase-admin-key.json`.
+- Copy the database URL and paste it into `FIREBASE_DATABASE_URL`.
+
+### Google Cloud
+- Create a new Google Cloud project, configure the OAuth consent screen, and create a new OAuth Client ID credential [here](https://console.cloud.google.com/apis/credentials).
+- Add `https://authconnect-djs.web.app/redir.html` as an authorized redirect URI in your Google Cloud credential.
 7. Remember to enable the Youtube Data API from the Google Cloud API Library page!
-8. Create a Spotify playlist and a Youtube playlist, and copy their IDs (you can get them as portions of the shareable URLs); paste them into the relevant fields
-9. When you first run your bot, it will ask you to click on two links. Follow instructions by copying the resulting link after you complete Spotify and Youtube auth flows.
-    - Note: Youtube auth only seems to work the first time, e.g. if you run the auth flow again after you have already authorized the app, it will not work. If you need to relink, go to myaccount.google.com, revoke your app's access, and relink.
+
+### Putting it all together
+- Create a Spotify playlist and a Youtube Music playlist, and copy their IDs (you can get them as portions of the shareable URLs); paste them into the relevant fields
+- Run the bot using `npm start`
+- Invite the bot to your server using the link provided by the Discord Developers portal.
+- The bot will instruct you to run the `login` command, and two auth URLs will be sent to your DMs. Open both links in the browser to link your account.
+- Now, when you send a song link to any channel in the server, it will add the song to both Youtube Music and Spotify playlists!~
+- You can include `!ignore` in your message to prevent the bot from adding the song to the playlists.
