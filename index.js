@@ -1,11 +1,13 @@
+import { createRequire } from "module";
 import DiscordAPI from "discord.js";
 import AuthConnect from "authconnect-djs";
 import {DISCORD_TOKEN, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SEND_CROSSPLATFORM_URL, FIREBASE_DATABASE_URL} from "./config.js";
 import firebase from "firebase-admin";
-import serviceAccount from "./firebase-admin-key.json" assert {type: "json"};
 import Spotify from "./helpers/spotify.js";
 import Youtube from "./helpers/youtube.js";
 import DataManager from "./helpers/dataManager.js";
+const require = createRequire(import.meta.url);
+const serviceAccount = require("./firebase-admin-key.json");
 
 const bot = new DiscordAPI.Client();
 
